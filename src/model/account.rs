@@ -1,4 +1,8 @@
-use serde::{ser::SerializeStruct, Deserialize, Serialize};
+use std::collections::HashMap;
+
+use serde::{ser::SerializeStruct, Serialize};
+
+use super::transaction::Transaction;
 
 #[derive(Debug, Clone)]
 pub struct Account {
@@ -6,6 +10,7 @@ pub struct Account {
     pub available: f64,
     pub held: f64,
     pub locked: bool,
+    pub transactions: HashMap<u32, Transaction>,
 }
 
 impl Serialize for Account {
@@ -30,6 +35,7 @@ impl Account {
             available: 0.0,
             held: 0.0,
             locked: false,
+            transactions: HashMap::new(),
         }
     }
 

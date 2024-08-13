@@ -1,6 +1,6 @@
 use super::{account::Account, transaction_type::TransactionType};
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Deserialize, Clone)]
 pub struct Transaction {
     pub transaction_type: TransactionType,
     pub client: u16,
@@ -13,6 +13,7 @@ impl Transaction {
         let account = accounts
             .entry(self.client)
             .or_insert(Account::new(self.client));
+        account.transactions.insert(self.tx, self.clone());
     }
 }
 
