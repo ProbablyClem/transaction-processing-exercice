@@ -25,14 +25,12 @@ mod tests {
                 client: 1,
                 available: 1.0,
                 held: 0.0,
-                total: 1.0,
                 locked: false,
             },
             Account {
                 client: 2,
                 available: 2.0,
                 held: 0.0,
-                total: 2.0,
                 locked: true,
             },
         ];
