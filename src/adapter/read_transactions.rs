@@ -74,11 +74,11 @@ mod tests {
     fn test_read_csv_with_precise_amount() {
         let data = "\
             type, client, tx, amount
-            withdrawal, 2, 5, 3.001";
+            withdrawal, 2, 5, 3.0001";
 
         let transactions = read_csv(data.as_bytes()).unwrap();
         let transaction = &transactions[0];
-        assert_eq!(transaction.amount, Some(3.001));
+        assert_eq!(transaction.amount, Some(3.0001));
     }
 
     #[test]

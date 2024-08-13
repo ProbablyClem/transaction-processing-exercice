@@ -1,3 +1,6 @@
+use serde::Serialize;
+
+#[derive(Debug, Serialize, Clone)]
 pub struct Account {
     pub client: u16,
     pub available: f64,
