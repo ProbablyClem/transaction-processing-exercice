@@ -245,4 +245,27 @@ mod tests {
         // The transaction should be stored in the locked_transactions map
         assert_eq!(account.locked_transactions.len(), 1);
     }
+
+    #[test]
+    fn test_precise_compute() {
+        let mut accounts = std::collections::HashMap::new();
+        let transaction = Transaction {
+            transaction_type: TransactionType::Withdrawal,
+            client: 1,
+            tx: 1,
+            amount: Some(3.0001),
+        };
+        execute(transaction, &mut accounts);
+        let account = accounts.get(&1).unwrap();
+        assert_eq!(account.available, -3.0001);
+        let transaction = Transaction {
+            transaction_type: TransactionType::Deposit,
+            client: 1,
+            tx: 2,
+            amount: Some(3.0001),
+        };
+        execute(transaction, &mut accounts);
+        let account = accounts.get(&1).unwrap();
+        assert_eq!(account.available, 0.0);
+    }
 }
