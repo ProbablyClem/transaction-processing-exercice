@@ -24,16 +24,13 @@ mod tests {
             Account {
                 client: 1,
                 available: 1.0,
-                held: 0.0,
-                locked: false,
-                transactions: Default::default(),
+                ..Default::default()
             },
             Account {
                 client: 2,
                 available: 2.0,
-                held: 0.0,
                 locked: true,
-                transactions: Default::default(),
+                ..Default::default()
             },
         ];
         let result = parse_accounts(accounts);

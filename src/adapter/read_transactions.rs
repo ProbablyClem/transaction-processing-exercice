@@ -1,5 +1,3 @@
-use csv::Reader;
-
 use crate::model::transaction::Transaction;
 
 pub fn read_transactions(file_name: String) -> Vec<Transaction> {
@@ -78,7 +76,7 @@ mod tests {
 
         let transactions = read_csv(data.as_bytes()).unwrap();
         let transaction = &transactions[0];
-        assert_eq!(transaction.amount, Some(3.0001));
+        assert_eq!(transaction.amount(), 3.0001);
     }
 
     #[test]

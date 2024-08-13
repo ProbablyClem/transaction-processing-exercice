@@ -6,7 +6,7 @@ pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
         t.execute(&mut accounts);
     }
     accounts
-        .iter()
-        .map(|(id, account)| account.to_owned())
+        .values()
+        .map(|account| account.to_owned())
         .collect()
 }

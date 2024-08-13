@@ -11,6 +11,15 @@ pub struct Account {
     pub held: f64,
     pub locked: bool,
     pub transactions: HashMap<u32, Transaction>,
+    // Transactions that were added to the account after it was locked
+    // Allows for the account to be unlocked and the transactions to be reprocessed
+    pub locked_transactions: HashMap<u32, Transaction>,
+}
+
+impl Default for Account {
+    fn default() -> Self {
+        Account::new(0)
+    }
 }
 
 impl Serialize for Account {
@@ -36,6 +45,7 @@ impl Account {
             held: 0.0,
             locked: false,
             transactions: HashMap::new(),
+            locked_transactions: HashMap::new(),
         }
     }
 
