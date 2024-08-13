@@ -1,5 +1,6 @@
 use crate::model::{account::Account, transaction::Transaction, transaction_type::TransactionType};
 
+/// Process the transactions and return the accounts
 pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
     let mut accounts = std::collections::HashMap::new();
     for t in transactions {
@@ -11,6 +12,7 @@ pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
         .collect()
 }
 
+/// Execute one transaction on the account
 pub fn execute(txn: Transaction, accounts: &mut std::collections::HashMap<u16, Account>) {
     let account = accounts
         .entry(txn.client)
@@ -25,12 +27,10 @@ pub fn execute(txn: Transaction, accounts: &mut std::collections::HashMap<u16, A
     match txn.transaction_type {
         TransactionType::Deposit => {
             account.available += txn.amount();
-
             account.transactions.insert(txn.tx, txn);
         }
         TransactionType::Withdrawal => {
             account.available -= txn.amount();
-
             account.transactions.insert(txn.tx, txn);
         }
         TransactionType::Dispute => {

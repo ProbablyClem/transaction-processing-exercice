@@ -13,6 +13,10 @@ fn main() {
 
 fn get_file_name() -> String {
     let args = std::env::args().collect::<Vec<String>>();
+    if args.len() != 2 {
+        eprintln!("Usage: cargo run <file_name>");
+        std::process::exit(1);
+    }
     let file_name = &args[1];
     file_name.to_string()
 }
