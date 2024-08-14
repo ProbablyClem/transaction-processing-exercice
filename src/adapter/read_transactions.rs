@@ -15,7 +15,7 @@ async fn read_csv<T: AsyncRead + Send + Unpin>(reader: T, sender: mpsc::Sender<M
         .trim(csv_async::Trim::All)
         .create_deserializer(reader);
 
-    //Deserialize the CSV asynchronously and send each transaction to the receiver.
+    //Deserialize the CSV asynchronously and send each transaction to the receiver as we stream them
     while let Some(transaction) = reader.deserialize::<Transaction>().next().await {
         let transaction = transaction.expect("Error reading transaction");
         sender

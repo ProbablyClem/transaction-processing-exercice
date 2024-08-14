@@ -7,6 +7,8 @@ use crate::model::{
 /// Process the transactions and return the accounts
 pub async fn process_transactions(mut receiver: mpsc::Receiver<Message>) -> Vec<Account> {
     let mut accounts = std::collections::HashMap::new();
+
+    // We process the transactions as they comme in
     while let Some(transaction) = receiver.recv().await {
         match transaction {
             Message::Transaction(txn) => {

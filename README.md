@@ -28,3 +28,9 @@ Cases that were documented in the requirements are skipped, for example a disput
 Otherwise we assert business logic constraits with expects throughout the code  [Tiger style](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md).
 
 Some cases are also handled gracefully, a deposit on a frozen account will be ignored, but we keep it in a separate queue for further processing in case of unlocking.
+
+## Performance
+We use the tokio async runtime to parse the file and process the transactions concurrently.
+This allows us to stream through a large file or handle tcp streams.
+
+We also use a hashmap to store the accounts and a hashmap to store the transactions, which allows us to have a average O(1) complexity for the lookups.
