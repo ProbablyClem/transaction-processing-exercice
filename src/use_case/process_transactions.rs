@@ -1,10 +1,22 @@
-use crate::model::{account::Account, transaction::Transaction, transaction_type::TransactionType};
+use tokio::sync::mpsc;
+
+use crate::model::{
+    account::Account, message::Message, transaction::Transaction, transaction_type::TransactionType,
+};
 
 /// Process the transactions and return the accounts
-pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
+pub async fn process_transactions(mut receiver: mpsc::Receiver<Message>) -> Vec<Account> {
     let mut accounts = std::collections::HashMap::new();
-    for t in transactions {
-        execute(t, &mut accounts);
+    while let Some(transaction) = receiver.recv().await {
+        match transaction {
+            Message::Transaction(txn) => {
+                execute(txn, &mut accounts);
+            }
+            Message::Eof => {
+                //Once we reach the end of the file, we break the loop
+                break;
+            }
+        }
     }
 
     // We return the accounts
@@ -71,8 +83,8 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_process_transactions() {
+    #[tokio::test]
+    async fn test_process_transactions() {
         let txn = vec![
             Transaction {
                 transaction_type: crate::model::transaction_type::TransactionType::Deposit,
@@ -87,8 +99,13 @@ mod tests {
                 amount: Some(2.0),
             },
         ];
-        let accounts = process_transactions(txn);
-        assert_eq!(accounts.len(), 2);
+        let (sender, receiver) = mpsc::channel(100);
+        let accounts = process_transactions(receiver);
+        for t in txn {
+            sender.send(Message::Transaction(t)).await.unwrap();
+        }
+        sender.send(Message::Eof).await.unwrap();
+        assert_eq!(accounts.await.len(), 2);
     }
 
     #[test]

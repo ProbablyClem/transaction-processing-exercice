@@ -2,6 +2,7 @@ use super::transaction_type::TransactionType;
 
 #[derive(Debug, serde::Deserialize, Clone)]
 pub struct Transaction {
+    #[serde(rename = "type")]
     pub transaction_type: TransactionType,
     pub client: u16,
     pub tx: u32,

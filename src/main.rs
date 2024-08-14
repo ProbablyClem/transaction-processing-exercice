@@ -1,14 +1,18 @@
 use adapter::{read_transactions::read_transactions, write_accounts::write_accounts};
+use tokio::sync::mpsc;
 use use_case::process_transactions::process_transactions;
 
 mod adapter;
 mod model;
 mod use_case;
-fn main() {
+
+#[tokio::main]
+async fn main() {
     let file_name = get_file_name();
-    let transactions = read_transactions(file_name);
-    let accounts = process_transactions(transactions);
-    write_accounts(accounts)
+    let (sender, receiver) = mpsc::channel(100);
+    read_transactions(file_name, sender).await;
+    let accounts = process_transactions(receiver).await;
+    write_accounts(accounts).await
 }
 
 /// Get file name from command line arguments

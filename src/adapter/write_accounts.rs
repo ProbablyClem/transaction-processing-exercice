@@ -1,16 +1,18 @@
 use crate::model::account::Account;
 
-pub fn write_accounts(accounts: Vec<Account>) {
-    let accounts = parse_accounts(accounts).expect("Failed to parse accounts");
+pub async fn write_accounts(accounts: Vec<Account>) {
+    let accounts = parse_accounts(accounts)
+        .await
+        .expect("Failed to parse accounts");
     print!("{}", accounts);
 }
 
-fn parse_accounts(accounts: Vec<Account>) -> Result<String, anyhow::Error> {
-    let mut wtr = csv::Writer::from_writer(vec![]);
+async fn parse_accounts(accounts: Vec<Account>) -> Result<String, anyhow::Error> {
+    let mut wtr = csv_async::AsyncSerializer::from_writer(vec![]);
     for account in accounts {
-        wtr.serialize(account)?;
+        wtr.serialize(account).await?;
     }
-    Ok(String::from_utf8(wtr.into_inner()?)?)
+    Ok(String::from_utf8(wtr.into_inner().await?)?)
 }
 
 #[cfg(test)]
@@ -18,8 +20,8 @@ mod tests {
     use super::*;
     use crate::model::account::Account;
 
-    #[test]
-    fn test_write_accounts() {
+    #[tokio::test]
+    async fn test_write_accounts() {
         let accounts = vec![
             Account {
                 client: 1,
@@ -33,7 +35,7 @@ mod tests {
                 ..Default::default()
             },
         ];
-        let result = parse_accounts(accounts);
+        let result = parse_accounts(accounts).await;
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(
