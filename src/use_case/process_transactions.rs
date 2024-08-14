@@ -6,6 +6,8 @@ pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
     for t in transactions {
         execute(t, &mut accounts);
     }
+
+    // We return the accounts
     accounts
         .values()
         .map(|account| account.to_owned())
@@ -14,12 +16,14 @@ pub fn process_transactions(transactions: Vec<Transaction>) -> Vec<Account> {
 
 /// Execute one transaction on the account
 pub fn execute(txn: Transaction, accounts: &mut std::collections::HashMap<u16, Account>) {
+    // Get the account or create a new one
     let account = accounts
         .entry(txn.client)
         .or_insert(Account::new(txn.client));
 
     if account.locked {
         // If the account is locked, store the transaction in a separate map, to not lose the data
+        // In a real-world scenario, we should persist this somewhere
         account.locked_transactions.insert(txn.tx, txn);
         return;
     }
@@ -27,29 +31,33 @@ pub fn execute(txn: Transaction, accounts: &mut std::collections::HashMap<u16, A
     match txn.transaction_type {
         TransactionType::Deposit => {
             account.available += txn.amount();
-            account.transactions.insert(txn.tx, txn);
+            account.transactions.insert(txn.tx, txn); // We insert after because insert takes ownership and we want to avoid cloning
         }
         TransactionType::Withdrawal => {
             account.available -= txn.amount();
-            account.transactions.insert(txn.tx, txn);
+            account.transactions.insert(txn.tx, txn); // We insert after because insert takes ownership and we want to avoid cloning
         }
         TransactionType::Dispute => {
-            // If the transaction is not found, do nothing
+            // If the transaction is not found, do nothing (defined in the spec)
             if let Some(source_txn) = account.transactions.get(&txn.tx) {
                 account.available -= source_txn.amount();
                 account.held += source_txn.amount();
             }
         }
         TransactionType::Resolve => {
-            // If the transaction is not found, do nothing
+            // If the transaction is not found, do nothing (defined in the spec)
             if let Some(source_txn) = account.transactions.get(&txn.tx) {
                 account.available += source_txn.amount();
                 account.held -= source_txn.amount();
             }
         }
         TransactionType::Chargeback => {
-            // If the transaction is not found, do nothing
+            // If the transaction is not found, do nothing (defined in the spec)
             if let Some(source_txn) = account.transactions.get(&txn.tx) {
+                // Sanity check
+                if account.held < source_txn.amount() {
+                    panic!("Chargeback amount is greater than held amount, the transaction should be disputed first");
+                }
                 account.held -= source_txn.amount();
                 account.locked = true;
             }

@@ -11,6 +11,7 @@ fn main() {
     write_accounts(accounts)
 }
 
+/// Get file name from command line arguments
 fn get_file_name() -> String {
     let args = std::env::args().collect::<Vec<String>>();
     if args.len() != 2 {

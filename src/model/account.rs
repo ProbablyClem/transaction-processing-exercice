@@ -12,7 +12,7 @@ pub struct Account {
     pub locked: bool,
     pub transactions: HashMap<u32, Transaction>,
     // Transactions that were added to the account after it was locked
-    // Allows for the account to be unlocked and the transactions to be reprocessed
+    // Allows to reprocess the transactions if the account is unlocked
     pub locked_transactions: HashMap<u32, Transaction>,
 }
 
